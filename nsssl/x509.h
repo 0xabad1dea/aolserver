@@ -51,31 +51,31 @@ extern int
 GetPrivateKey(B_KEY_OBJ * key, char *filename);
 
 extern int
-GetCertificate(unsigned char **pCertificate, int *length, char *filename);
+GetCertificate(unsigned char **pCertificate, int *length, char *filename); //! signed as length
 
 extern char *
 PrivateKeyToPEM(B_KEY_OBJ privateKey);
 
 extern unsigned char *
-GetBerFromPEM(char *filename, char *section, int *length);
+GetBerFromPEM(char *filename, char *section, int *length); //! signed as length
 
 extern void
-AddLengthCount(Ns_DString *ds, unsigned int length);
+AddLengthCount(Ns_DString *ds, unsigned int length); //! good
 
 extern int
-GetLengthCount(unsigned char *der, unsigned int *length);
+GetLengthCount(unsigned char *der, unsigned int *length); //! good
 
 extern int
-SetOf(unsigned char *der, int length);
+SetOf(unsigned char *der, int length); //! signed as length
 
 extern int
-DecodeSetOf(Ns_DString *ds, unsigned char *der, int length, int indent);
+DecodeSetOf(Ns_DString *ds, unsigned char *der, int length, int indent); //! signed as length x2
 
 void extern
 RecodeAsSetOf(Ns_DString *dsSrc, Ns_DString *dsDest);
 
 extern int
-DERDecode(Ns_DString *ds, unsigned char *der, int length, int indent);
+DERDecode(Ns_DString *ds, unsigned char *der, int length, int indent); //! signed as length x2
 
 extern int
 DEREncode(Ns_DString *ds, char *asn1);
