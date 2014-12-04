@@ -148,9 +148,9 @@ extern B_ALGORITHM_METHOD *DIGEST_CHOOSER[];
  * The data to be encrypted/decrypted.
  */
 typedef struct {
-    int             nRecordLength;
-    int             fIsEscape;
-    int             nPadding;
+    int             nRecordLength;	//! signed as length
+    int             fIsEscape;		//! signed as bool
+    int             nPadding;		//! signed as count?
     unsigned char  *mac;
     unsigned char  *data;
     unsigned char   macBuf[SSL_MACSIZE];
@@ -167,7 +167,7 @@ typedef struct {
 typedef struct {
     B_KEY_OBJ       privateKey;
     unsigned char  *certificate;
-    int             certificateLength;
+    int             certificateLength;	//! signed as length
 } SSLServer;
 
 
@@ -178,25 +178,25 @@ typedef struct {
  */
 typedef struct {
     SOCKET          socket;
-    int		    timeout;
+    int		    timeout;	//! signed as length?
     SSLServer      *ctx;
     SSLRecord       rec;
     unsigned        nReadSequence;
     unsigned        nWriteSequence;
-    int             fEncryptionActive;
+    int             fEncryptionActive;	//! signed as bool
     B_ALGORITHM_OBJ digester;
     B_ALGORITHM_OBJ encryptor;
     B_ALGORITHM_OBJ decryptor;
     unsigned char   challenge[32];
-    int             challengeLength;
+    int             challengeLength;	//! signed as length
     unsigned char   connId[SSL_SESSION_ID_LENGTH];
     unsigned char   sessionId[SSL_SESSION_ID_LENGTH];
     int             cipherKind;
     unsigned char   masterKey[1024];
-    int             masterKeyLength;
+    int             masterKeyLength;	//! signed as length
     unsigned char   readKeyArgData[8];
     unsigned char   writeKeyArgData[8];
-    int             keyArgLength;
+    int             keyArgLength;	//! signed as length
     unsigned char   readKey[24];
     B_KEY_OBJ       readKeyObj;
     unsigned char   writeKey[24];
@@ -206,16 +206,16 @@ typedef struct {
     unsigned int    macSize;
     unsigned char  *incomingNext;
     unsigned char   incoming[SSL_MAXRECSIZE];
-    int             incomingLength;
+    int             incomingLength;	//! signed as length
     unsigned char   outgoing[SSL_MAXRECSIZE];
-    int             outgoingLength;
+    int             outgoingLength;	//! signed as length
 
     /*
      * The following are used for raw socket
      * read-ahead.
      */
 
-    int		    cnt;
+    int		    cnt;	//! signed as count
     char	   *base;
     char	    buf[SSL_MAXRECSIZE];
 
