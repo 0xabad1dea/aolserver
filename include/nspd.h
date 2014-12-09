@@ -36,7 +36,7 @@
 #define DB_DML 1
 #define EXCEPTION_CODE_MAX 32
 #define EXCEPTION_MSG_MAX  4096
-#define END_DATA "-1\n"
+#define END_DATA "-1\n" //! what ?
 
 #define NS_OK 0
 #define NS_ERROR (-1)
@@ -48,33 +48,33 @@ typedef enum {
 }               Ns_PdLogMsgType;
 
 typedef struct Ns_PdRowData {
-    int             elSize;
+    int             elSize; //! signed as length
     char           *elData;
 }               Ns_PdRowData;
 
 typedef struct Ns_PdRowInfo {
-    int             numColumns;
+    int             numColumns; //! size as count
     Ns_PdRowData   *rowData;
 }               Ns_PdRowInfo;
 
 extern int      Ns_PdMain(int argc, char **argv);
-extern Ns_PdRowInfo *Ns_PdNewRowInfo(int ncols);
-extern void     Ns_PdFreeRowInfo(Ns_PdRowInfo * rowInfo, int fFreeData);
+extern Ns_PdRowInfo *Ns_PdNewRowInfo(int ncols);    //! signed as count
+extern void     Ns_PdFreeRowInfo(Ns_PdRowInfo * rowInfo, int fFreeData);    //! signed as... something?
 extern void     Ns_PdSendRowInfo(Ns_PdRowInfo * rowInfo);
-extern void     Ns_PdSetRowInfoNumColumns(Ns_PdRowInfo * rowInfo, int numColumns);
-extern void     Ns_PdSetRowInfoItem(Ns_PdRowInfo * rowInfo, int index, char *data, int size);
+extern void     Ns_PdSetRowInfoNumColumns(Ns_PdRowInfo * rowInfo, int numColumns);  //! signed as count
+extern void     Ns_PdSetRowInfoItem(Ns_PdRowInfo * rowInfo, int index, char *data, int size);   //! signed x2
 extern int      Ns_PdGetRowInfoNumColumns(Ns_PdRowInfo * rowInfo);
-extern int      Ns_PdFindRowInfoValue(Ns_PdRowInfo * rowInfo, char *value, int len);
-extern void     Ns_PdGetRowInfoItem(Ns_PdRowInfo * rowInfo, int index, char **data, int *size);
+extern int      Ns_PdFindRowInfoValue(Ns_PdRowInfo * rowInfo, char *value, int len);    //! signed as length
+extern void     Ns_PdGetRowInfoItem(Ns_PdRowInfo * rowInfo, int index, char **data, int *size); //! signed as len
 extern void    *Ns_PdDbInit(void);
 extern void     Ns_PdDbFlush(void *dbhandle);
 extern void     Ns_PdDbCancel(void *dbhandle);
 extern void     Ns_PdDbTableList(void *dbhandle, char *includeSystem);
-extern void     Ns_PdDbExec(void *dbhandle, char *sql);
+extern void     Ns_PdDbExec(void *dbhandle, char *sql); //! followup for sql injection
 extern void     Ns_PdDbBindRow(void *dbhandle);
-extern void     Ns_PdDbGetRow(void *dbhandle, char *columnCount);
-extern void     Ns_PdDbGetTableInfo(void *dbhandle, char *tableName);
-extern void     Ns_PdDbBestRowId(void *dbhandle, char *tableName);
+extern void     Ns_PdDbGetRow(void *dbhandle, char *columnCount);   //! followup for ??? char* ???
+extern void     Ns_PdDbGetTableInfo(void *dbhandle, char *tableName);   //! followup for tableName source
+extern void     Ns_PdDbBestRowId(void *dbhandle, char *tableName);  //! followup for tableName source
 extern void     Ns_PdDbClose(void *dbhandle);
 extern void     Ns_PdDbOpen(void *dbhandle, char *datasource);
 extern void     Ns_PdDbCleanup(void *dbhandle);
@@ -82,17 +82,17 @@ extern void     Ns_PdDbIdentify(void *dbhandle);
 extern void     Ns_PdDbGetTypes(void *dbhandle);
 extern void     Ns_PdDbResultId(void *dbhandle);
 extern void     Ns_PdDbResultRows(void *dbhandle);
-extern void     Ns_PdDbSetMaxRows(void *dbhandle, char *maxRows);
+extern void     Ns_PdDbSetMaxRows(void *dbhandle, char *maxRows);   //! followup for ??? char* ???
 extern void     Ns_PdDbResetHandle(void *dbhandle);
 
 extern void     Ns_PdSendString(char *rsp);
-extern void     Ns_PdSendData(char *data, int len);
+extern void     Ns_PdSendData(char *data, int len); //! signed as length
 extern void     Ns_PdSendException(char *code, char *msg);
 extern int      Ns_PdCloseonexec(int fd);
 extern void 
 Ns_PdParseOpenArgs(char *openargs, char **datasource, char **user,
-    char **password, char **param);
-extern int      Ns_PdSqlbufEnough(char **sqlbuf, int *sqlbufsize, int howmuch);
+    char **password, char **param); //! followup for static password
+extern int      Ns_PdSqlbufEnough(char **sqlbuf, int *sqlbufsize, int howmuch); //! signed as length x2
 extern void     Ns_PdLog(Ns_PdLogMsgType errtype, char *format,...);
 extern char    *Ns_PdStringTrim(char *string);
 extern void     Ns_PdDbSpReturnCode(void *handle);
