@@ -49,3 +49,4 @@ Ns_ModuleInit(char *server, char *module)
 
     return NS_MODINIT(server, module);
 }
+//! nothing of interest
