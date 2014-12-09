@@ -76,3 +76,4 @@ extern char    *Ns_ExtDbMsgCodeToName(Ns_ExtDbCommandCode code);
 extern short    Ns_ExtDbMsgRequiresArg(Ns_ExtDbCommandCode code);
 
 #endif                                  /* NSEXTMSG_H */
+//! nothing of interest
