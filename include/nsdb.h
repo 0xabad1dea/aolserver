@@ -105,7 +105,7 @@ typedef struct Ns_DbHandle {
     char       *driver;
     char       *datasource;
     char       *user;
-    char       *password;
+    char       *password;	//! followup: static password in code?
     void       *connection;
     char       *poolname;
     int         connected;
@@ -115,7 +115,7 @@ typedef struct Ns_DbHandle {
     Ns_DString  dsExceptionMsg;
     void       *context;
     void       *statement;
-    int         fetchingRows;
+    int         fetchingRows;	//! signed as count
 } Ns_DbHandle;
 
 /*
@@ -127,7 +127,7 @@ typedef struct Ns_DbHandle {
 typedef struct {
     Ns_Set  *table;
     int      size;
-    int      ncolumns;
+    int      ncolumns;	//! signed as count but this is legacy cruft
     Ns_Set **columns;
 } Ns_DbTableInfo;
 
@@ -138,9 +138,9 @@ typedef struct {
 NS_EXTERN int Ns_DbRegisterDriver(char *driver, Ns_DbProc *procs);
 NS_EXTERN char *Ns_DbDriverName(Ns_DbHandle *handle);
 NS_EXTERN char *Ns_DbDriverDbType(Ns_DbHandle *handle);
-NS_EXTERN int Ns_DbDML(Ns_DbHandle *handle, char *sql);
-NS_EXTERN Ns_Set *Ns_DbSelect(Ns_DbHandle *handle, char *sql);
-NS_EXTERN int Ns_DbExec(Ns_DbHandle *handle, char *sql);
+NS_EXTERN int Ns_DbDML(Ns_DbHandle *handle, char *sql);	//! followup for sql injection
+NS_EXTERN Ns_Set *Ns_DbSelect(Ns_DbHandle *handle, char *sql);	//! followup for sql injection
+NS_EXTERN int Ns_DbExec(Ns_DbHandle *handle, char *sql);	//! followup for sql injection
 NS_EXTERN Ns_Set *Ns_DbBindRow(Ns_DbHandle *handle);
 NS_EXTERN int Ns_DbGetRow(Ns_DbHandle *handle, Ns_Set *row);
 NS_EXTERN int Ns_DbFlush(Ns_DbHandle *handle);
@@ -151,7 +151,7 @@ NS_EXTERN int Ns_DbSpSetParam(Ns_DbHandle *handle, char *paramname,
 			   char *paramtype, char *inout, char *value);
 NS_EXTERN int Ns_DbSpExec(Ns_DbHandle *handle);
 NS_EXTERN int Ns_DbSpReturnCode(Ns_DbHandle *handle, char *returnCode,
-			     int bufsize);
+			     int bufsize);	//! signed as length
 NS_EXTERN Ns_Set *Ns_DbSpGetParams(Ns_DbHandle *handle);
 
 /*
@@ -163,12 +163,12 @@ NS_EXTERN char *Ns_DbPoolDefault(char *server);
 NS_EXTERN char *Ns_DbPoolList(char *server);
 NS_EXTERN int Ns_DbPoolAllowable(char *server, char *pool);
 NS_EXTERN void Ns_DbPoolPutHandle(Ns_DbHandle *handle);
-NS_EXTERN Ns_DbHandle *Ns_DbPoolTimedGetHandle(char *pool, int wait);
+NS_EXTERN Ns_DbHandle *Ns_DbPoolTimedGetHandle(char *pool, int wait);	//! signed as time
 NS_EXTERN Ns_DbHandle *Ns_DbPoolGetHandle(char *pool);
 NS_EXTERN int Ns_DbPoolGetMultipleHandles(Ns_DbHandle **handles, char *pool,
 				       int nwant);
 NS_EXTERN int Ns_DbPoolTimedGetMultipleHandles(Ns_DbHandle **handles, char *pool,
-					    int nwant, int wait);
+					    int nwant, int wait);	//! signed as time
 NS_EXTERN int Ns_DbBouncePool(char *pool);
 
 /*
@@ -183,9 +183,9 @@ NS_EXTERN int Ns_TclDbGetHandle(Tcl_Interp *interp, char *handleId,
  */
     
 NS_EXTERN void Ns_DbQuoteValue(Ns_DString *pds, char *string);
-NS_EXTERN Ns_Set *Ns_Db0or1Row(Ns_DbHandle *handle, char *sql, int *nrows);
-NS_EXTERN Ns_Set *Ns_Db1Row(Ns_DbHandle *handle, char *sql);
-NS_EXTERN int Ns_DbInterpretSqlFile(Ns_DbHandle *handle, char *filename);
+NS_EXTERN Ns_Set *Ns_Db0or1Row(Ns_DbHandle *handle, char *sql, int *nrows);	//! signed as count; followup sql
+NS_EXTERN Ns_Set *Ns_Db1Row(Ns_DbHandle *handle, char *sql);	//! followup for sql injection
+NS_EXTERN int Ns_DbInterpretSqlFile(Ns_DbHandle *handle, char *filename);	//! followup for filename source
 NS_EXTERN void Ns_DbSetException(Ns_DbHandle *handle, char *code, char *msg);
 
 #endif /* NSDB_H */
