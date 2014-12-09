@@ -44,3 +44,4 @@ NS_INIT(void)
 
     NS_LIBINIT();
 }
+//! nothing of interest
