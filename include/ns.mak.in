@@ -252,3 +252,4 @@ clean-pgm:
 	$(RM) $(PGM) $(PGMOBJS)
 
 .PHONY: clean-mod clean-dll clean-pgm install-man1 install-man3 install-mann
+#//! out of scope
