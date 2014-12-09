@@ -120,3 +120,4 @@
     ", compiled: " __DATE__ " " __TIME__
 
 #endif /* NSATTRS_H */
+//! nothing of interest
