@@ -37,3 +37,4 @@
 #
 
 include $(AOLSERVER)/include/ns.mak
+#!// out of scope
