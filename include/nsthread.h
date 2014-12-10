@@ -174,8 +174,8 @@ typedef struct Ns_Sema_		*Ns_Sema;
 typedef struct Ns_RWLock_	*Ns_RWLock;
 
 typedef struct Ns_Time {
-    time_t	sec;
-    long	usec;
+    time_t	sec;	//! signed generally
+    long	usec;	//! signed
 } Ns_Time;
 
 typedef void (Ns_ThreadProc) (void *arg);
@@ -199,10 +199,10 @@ NS_EXTERN void Ns_MasterUnlock(void);
  * memory.c:
  */
 
-NS_EXTERN void *ns_malloc(size_t size) _nsmalloc;
-NS_EXTERN void *ns_calloc(size_t num, size_t size) _nsmalloc;
+NS_EXTERN void *ns_malloc(size_t size) _nsmalloc;	//! good
+NS_EXTERN void *ns_calloc(size_t num, size_t size) _nsmalloc;	//! good
 NS_EXTERN void ns_free(void *buf);
-NS_EXTERN void *ns_realloc(void *buf, size_t size);
+NS_EXTERN void *ns_realloc(void *buf, size_t size);	//! good
 NS_EXTERN char *ns_strdup(const char *string) _nsmalloc;
 NS_EXTERN char *ns_strcopy(const char *string) _nsmalloc;
 
@@ -266,10 +266,10 @@ NS_EXTERN char *ns_inet_ntoa(struct in_addr addr);
  * sema.c:
  */
 
-NS_EXTERN void Ns_SemaInit(Ns_Sema *semaPtr, int initCount);
+NS_EXTERN void Ns_SemaInit(Ns_Sema *semaPtr, int initCount);	//! signed as count
 NS_EXTERN void Ns_SemaDestroy(Ns_Sema *semaPtr);
 NS_EXTERN void Ns_SemaWait(Ns_Sema *semaPtr);
-NS_EXTERN void Ns_SemaPost(Ns_Sema *semaPtr, int count);
+NS_EXTERN void Ns_SemaPost(Ns_Sema *semaPtr, int count);	//! signed count
 
 /*
  * signal.c:
@@ -287,7 +287,7 @@ NS_EXTERN int ns_signal(int sig, void (*proc)(int));
 
 NS_EXTERN void NsThreads_LibInit(void);
 NS_EXTERN void Ns_ThreadCreate(Ns_ThreadProc *proc, void *arg, long stackSize,
-			    Ns_Thread *resultPtr);
+			    Ns_Thread *resultPtr);	//! signed as length
 NS_EXTERN void Ns_ThreadExit(void *arg);
 NS_EXTERN void Ns_ThreadJoin(Ns_Thread *threadPtr, void **argPtr);
 NS_EXTERN void Ns_ThreadYield(void);
@@ -296,7 +296,7 @@ NS_EXTERN int Ns_ThreadId(void);
 NS_EXTERN void Ns_ThreadSelf(Ns_Thread *threadPtr);
 NS_EXTERN char *Ns_ThreadGetName(void);
 NS_EXTERN char *Ns_ThreadGetParent(void);
-NS_EXTERN long Ns_ThreadStackSize(long size);
+NS_EXTERN long Ns_ThreadStackSize(long size);	//! signed as length
 NS_EXTERN void Ns_ThreadList(Tcl_DString *dsPtr, Ns_ThreadArgProc *proc);
 NS_EXTERN int Ns_CheckStack(void);
 
@@ -307,7 +307,7 @@ NS_EXTERN int Ns_CheckStack(void);
 NS_EXTERN void Ns_GetTime(Ns_Time *timePtr);
 NS_EXTERN void Ns_AdjTime(Ns_Time *timePtr);
 NS_EXTERN int  Ns_DiffTime(Ns_Time *t1, Ns_Time *t0, Ns_Time *resultPtr);
-NS_EXTERN void Ns_IncrTime(Ns_Time *timePtr, time_t sec, long usec);
+NS_EXTERN void Ns_IncrTime(Ns_Time *timePtr, time_t sec, long usec);	//! signed as time
 
 /*
  * tls.c:
@@ -346,21 +346,21 @@ NS_EXTERN int Ns_DestroyEvent(Ns_Event *event);
 NS_EXTERN int Ns_SetEvent(Ns_Event *event);
 NS_EXTERN int Ns_BroadcastEvent(Ns_Event *event);
 NS_EXTERN int Ns_WaitForEvent(Ns_Event *event, Ns_Mutex *lock);
-NS_EXTERN int Ns_TimedWaitForEvent(Ns_Event *event, Ns_Mutex *lock, int timeout);
+NS_EXTERN int Ns_TimedWaitForEvent(Ns_Event *event, Ns_Mutex *lock, int timeout);	//! signed as time
 NS_EXTERN int Ns_AbsTimedWaitForEvent(Ns_Event *event, Ns_Mutex *lock,
-				   time_t abstime);
+				   time_t abstime);	//! signed as time
 NS_EXTERN int Ns_UTimedWaitForEvent(Ns_Event *event, Ns_Mutex *lock, int seconds,
-				 int microseconds);
+				 int microseconds);	//! signed as time x2
 NS_EXTERN int Ns_InitializeRWLock(Ns_RWLock *lock);
 NS_EXTERN int Ns_DestroyRWLock(Ns_RWLock *lock);
 NS_EXTERN int Ns_ReadLockRWLock(Ns_RWLock *lock);
 NS_EXTERN int Ns_ReadUnlockRWLock(Ns_RWLock *lock);
 NS_EXTERN int Ns_WriteLockRWLock(Ns_RWLock *lock);
 NS_EXTERN int Ns_WriteUnlockRWLock(Ns_RWLock *lock);
-NS_EXTERN int Ns_InitializeSemaphore(Ns_Semaphore *sema, int initCount);
+NS_EXTERN int Ns_InitializeSemaphore(Ns_Semaphore *sema, int initCount);	//! signed as count
 NS_EXTERN int Ns_DestroySemaphore(Ns_Semaphore *sema);
 NS_EXTERN int Ns_WaitForSemaphore(Ns_Semaphore *sema);
-NS_EXTERN int Ns_ReleaseSemaphore(Ns_Semaphore *sema, int count);
+NS_EXTERN int Ns_ReleaseSemaphore(Ns_Semaphore *sema, int count);	//! signed as count
 NS_EXTERN int Ns_AllocThreadLocalStorage(Ns_ThreadLocalStorage *tls,
 				      Ns_TlsCleanup *cleanup);
 NS_EXTERN int Ns_SetThreadLocalStorage(Ns_ThreadLocalStorage *tls, void *p);
@@ -383,17 +383,17 @@ NS_EXTERN int nsMemNumBuckets;
 NS_EXTERN Ns_Pool *Ns_PoolCreate(char *name);
 NS_EXTERN void Ns_PoolFlush(Ns_Pool *pool);
 NS_EXTERN void Ns_PoolDestroy(Ns_Pool *pool);
-NS_EXTERN void *Ns_PoolAlloc(Ns_Pool *pool, size_t size);
+NS_EXTERN void *Ns_PoolAlloc(Ns_Pool *pool, size_t size);	//! good
 NS_EXTERN void Ns_PoolFree(Ns_Pool *pool, void *cp);
-NS_EXTERN void *Ns_PoolRealloc(Ns_Pool *pool, void *ptr, size_t size);
-NS_EXTERN void *Ns_PoolCalloc(Ns_Pool *pool, size_t elsize, size_t nelem);
+NS_EXTERN void *Ns_PoolRealloc(Ns_Pool *pool, void *ptr, size_t size);	//! good
+NS_EXTERN void *Ns_PoolCalloc(Ns_Pool *pool, size_t elsize, size_t nelem);	//! good
 NS_EXTERN char *Ns_PoolStrDup(Ns_Pool *pool, char *old);
 NS_EXTERN char *Ns_PoolStrCopy(Ns_Pool *pool, char *old);
-NS_EXTERN void *Ns_ThreadMalloc(size_t size);
-NS_EXTERN void *Ns_ThreadAlloc(size_t size);
-NS_EXTERN void *Ns_ThreadRealloc(void *ptr, size_t size);
+NS_EXTERN void *Ns_ThreadMalloc(size_t size);	//! good
+NS_EXTERN void *Ns_ThreadAlloc(size_t size);	//! good
+NS_EXTERN void *Ns_ThreadRealloc(void *ptr, size_t size);	//! good
 NS_EXTERN void Ns_ThreadFree(void *ptr);
-NS_EXTERN void *Ns_ThreadCalloc(size_t nelem, size_t elsize);
+NS_EXTERN void *Ns_ThreadCalloc(size_t nelem, size_t elsize);	//! good
 NS_EXTERN char *Ns_ThreadStrDup(char *old);
 NS_EXTERN char *Ns_ThreadStrCopy(char *old);
 
