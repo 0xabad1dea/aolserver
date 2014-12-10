@@ -65,3 +65,4 @@ ifdef LIBOBJS
 endif
 
 include $(AOLSERVER)/include/Makefile.global
+#//! out of scope
