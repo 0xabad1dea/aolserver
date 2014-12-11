@@ -241,7 +241,7 @@ NsSSLGenerateKeypair(unsigned int modulusBits,
         }
         params.modulusBits = modulusBits;
 	
-        if (publicExponent != NULL) {
+        if (publicExponent != NULL) {	//! followup: does bsafe reject bad exponents?
             memcpy(&params.publicExponent, publicExponent, sizeof(ITEM));
         } else {
             params.publicExponent.data = f4Data;	//! exponent of 65537 (good afaik)
