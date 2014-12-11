@@ -26,7 +26,7 @@
  * If you do not delete the provisions above, a recipient may use your
  * version of this file under either the License or the GPL.
  */
-
+//! so, the below is kind of a hint that this code is old even as the elves would reckon it
 /*
  * EXPORT NOTICE 
  * 
@@ -69,7 +69,7 @@ static const char *RCSID = "@(#): $Header: /Users/dossy/Desktop/cvs/aolserver/ns
  * BSAFE algorithm chooser
  *
  */
-
+//! issue: this export dichotomy has got to go.
 B_ALGORITHM_METHOD *ALGORITHM_CHOOSER[] = {
 #ifndef SSL_EXPORT
     &AM_DES_CBC_DECRYPT,
@@ -191,7 +191,7 @@ static void U24TOA(unsigned u, unsigned char *dest);
 static void U24TOA(unsigned u, unsigned char *dest);
 static void U16TOA(unsigned u, unsigned char *dest);
 
-static unsigned char f4Data[3] = {0x01, 0x00, 0x01};
+static unsigned char f4Data[3] = {0x01, 0x00, 0x01};	//! 65537 (exponent, obfuscated because ???)
 
 
 /* 
@@ -216,7 +216,7 @@ static unsigned char f4Data[3] = {0x01, 0x00, 0x01};
  *
  *----------------------------------------------------------------------
  */
-
+//! ISSUES
 int
 NsSSLGenerateKeypair(unsigned int modulusBits,
 		     ITEM *       publicExponent,
@@ -234,7 +234,7 @@ NsSSLGenerateKeypair(unsigned int modulusBits,
     *privateKey = (B_KEY_OBJ) NULL;
     do {
         A_RSA_KEY_GEN_PARAMS params;
-	
+	//! issue: this range is far too low on both ends in modern terms
         if ((modulusBits < 256) || (modulusBits > 1024)) {
             Ns_Log(Error, "nsssl: invalid key size");
             break;
@@ -244,7 +244,7 @@ NsSSLGenerateKeypair(unsigned int modulusBits,
         if (publicExponent != NULL) {
             memcpy(&params.publicExponent, publicExponent, sizeof(ITEM));
         } else {
-            params.publicExponent.data = f4Data;
+            params.publicExponent.data = f4Data;	//! exponent of 65537 (good afaik)
             params.publicExponent.len = 3;
         }
 	
@@ -285,14 +285,14 @@ NsSSLGenerateKeypair(unsigned int modulusBits,
     if (err != 0) {
         Ns_Log(Error, "nsssl: bsafe error %d", err);
         B_DestroyKeyObject(publicKey);
-        B_DestroyKeyObject(privateKey);
+        B_DestroyKeyObject(privateKey);	//! followup: this is bsafe I think?, does it zero out the memory?
     }
     B_DestroyAlgorithmObject(&keypairGenerator);
     
     return status;
 }
 
-
+
 /* 
  *---------------------------------------------------------------------- 
  * 
