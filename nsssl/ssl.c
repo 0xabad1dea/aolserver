@@ -532,13 +532,13 @@ NsSSLCreateConn(SOCKET socket, int timeout, void *server)
     		rec->nRecordLength = 3;
     		rec->fIsEscape = 0;
     		(void) SendRecord(con);
-                break;
+                break;	//! this whole block looks okay
             }
-            con->challengeLength = iChallengeLength;
-            memcpy(con->challenge,
-		   &clientHello->data + iCipherSpecsLength + iSessionIdLength,
-		   iChallengeLength);
-        }
+            con->challengeLength = iChallengeLength; //! 16 to 32
+            memcpy(con->challenge, //! 32 byte buffer
+		   &clientHello->data + iCipherSpecsLength /*//! OOB */ + iSessionIdLength /*//! 0 or 16 */,
+		   iChallengeLength /*//! 16 to 32*/);	//! issue: won't overflow but tied to line 521 issue
+        }	//! (assuming it didn't crash already, that is)
 	
 	/*
 	 * Get a new session id (a random number).
@@ -548,28 +548,28 @@ NsSSLCreateConn(SOCKET socket, int timeout, void *server)
         /*
 	 * Make the SERVER-HELLO.
 	 */
-        serverHello = (ServerHello *) rec->input;
+        serverHello = (ServerHello *) rec->input;	//! 32770 bytes
         serverHello->msg = SSL_MT_SERVER_HELLO;
         serverHello->sessionIdHit = 0;
         serverHello->certificateType = SSL_CT_X509_CERTIFICATE;
 	
         U16TOA(SSL_SERVER_VERSION, serverHello->serverVersion);
         U16TOA(ctx->certificateLength, serverHello->certificateLength);
-        i = num_common * 3;
+        i = num_common * 3;	//! tied to line 521 issue
 	
-        U16TOA(i, serverHello->cipherSpecsLength);
+        U16TOA(i, serverHello->cipherSpecsLength);	//! putting in nonsense number, line 521 (assuming we didn't crash)
         U16TOA(SSL_SESSION_ID_LENGTH, serverHello->connectionIdLength);
-        p = &serverHello->data;
+        p = &serverHello->data;	// 32770 - 11 = 32759 bytes
 	
-        memcpy(p, ctx->certificate, ctx->certificateLength);
-        p += ctx->certificateLength;
+        memcpy(p, ctx->certificate, ctx->certificateLength);	//! issue: length of certificate seems to be unbounded?,
+        p += ctx->certificateLength;	//! x509.c:GetBerFromPEM, unlikely to trigger in practice
 	
-        memcpy(p, common_ciphers, i);
-        p += i;
-	
-        memcpy(p, con->connId, SSL_SESSION_ID_LENGTH);
+        memcpy(p, common_ciphers, i);	//! issue: tied to line 521 issue and line 564 issue, sending them OOB junk
+        p += i;	//! under line 521 issue, this is now OOB (if we still haven't crashed!)
+	//! under line 564 issue this could also be OOB
+        memcpy(p, con->connId, SSL_SESSION_ID_LENGTH);	//! you know what just assume we all crashed and died
         rec->nRecordLength = (sizeof(ServerHello) - 1) +
-            ctx->certificateLength + i + SSL_SESSION_ID_LENGTH;
+            ctx->certificateLength + i + SSL_SESSION_ID_LENGTH;	//! we ded
         rec->fIsEscape = 0;
 	
         /*
