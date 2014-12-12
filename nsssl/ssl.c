@@ -484,7 +484,7 @@ NsSSLCreateConn(SOCKET socket, int timeout, void *server)
             break;
 	    
         } else {
-            ClientHello    *clientHello = (ClientHello *) rec->data;
+            ClientHello    *clientHello = (ClientHello *) rec->data;	//! off wire
             int             iClientVersion;
             int             iCipherSpecsLength;
             int             iSessionIdLength;
@@ -492,7 +492,7 @@ NsSSLCreateConn(SOCKET socket, int timeout, void *server)
             int             i;
 	    
             iClientVersion = ATOU16(clientHello->clientVersion);
-            iCipherSpecsLength = ATOU16(clientHello->cipherSpecsLength);
+            iCipherSpecsLength = ATOU16(clientHello->cipherSpecsLength); //! pulls 16 bits off wire
             iSessionIdLength = ATOU16(clientHello->sessionIdLength);
             iChallengeLength = ATOU16(clientHello->challengeLength);
 	    
@@ -501,7 +501,7 @@ NsSSLCreateConn(SOCKET socket, int timeout, void *server)
                 break;
             }
             if ((clientHello->msg != SSL_MT_CLIENT_HELLO) ||
-                ((iCipherSpecsLength % 3) != 0) ||
+                ((iCipherSpecsLength % 3) != 0) ||	//! only validates it divides by 3
                 ((iSessionIdLength != 0) && (iSessionIdLength != 16)) ||
                 (iChallengeLength < 16) || (iChallengeLength > 32)) {
 		Ns_Log(Debug, "nsssl: client sent malformed CLIENT-HELLO");
@@ -514,11 +514,11 @@ NsSSLCreateConn(SOCKET socket, int timeout, void *server)
             }
 
             num_common = 0;
-            for (i = 0; i < iCipherSpecsLength; i += 3) {
-                int ck = ATOU24(&clientHello->data + i) | 0x01000000;
+            for (i = 0; i < iCipherSpecsLength; i += 3) {	//! iterates over number pulled from wire
+                int ck = ATOU24(&clientHello->data + i) | 0x01000000;	//! reads deep into wire data, possibly off end
 		
-                if ( CheckForAlgorithm(ck) == NS_OK) {
-                    U24TOA(ck, &common_ciphers[num_common * 3]);
+                if ( CheckForAlgorithm(ck) == NS_OK) {	//! checks the number is on cipher list; does not check it's unique
+                    U24TOA(ck, &common_ciphers[num_common * 3]);	//! issue: HERE BE OUT OF BOUNDS WRITES
                     num_common++;
                 }
             }
@@ -1209,9 +1209,9 @@ Decrypt(SSLConn * con)
         if (err != 0) {
             break;
         }
-        U32TOA(con->nReadSequence, buf);
+        U32TOA(con->nReadSequence, buf); //! constraint met; not null terminated
 	
-        err = B_DigestUpdate(con->digester, buf, 4,
+        err = B_DigestUpdate(con->digester, buf, 4, //! followup: that 4 means we don't need null termination right?
 			     (A_SURRENDER_CTX *) NULL);
         if (err != 0) {
             break;
@@ -2403,7 +2403,7 @@ GenerateRandomBytes(unsigned char *output, int outputLength)
  *
  *----------------------------------------------------------------------
  */
-
+//! constraint: presumes buf >= 16 bytes. constraint met in sole caller
 static int
 NewSessionID(unsigned char *buf)
 {
@@ -2426,7 +2426,7 @@ NewSessionID(unsigned char *buf)
  *
  *----------------------------------------------------------------------
  */
-
+//! constraint: presumes dest >= 4 bytes, does not append null.
 static void
 U32TOA(unsigned u, unsigned char *dest)
 {
@@ -2452,7 +2452,7 @@ U32TOA(unsigned u, unsigned char *dest)
  *
  *----------------------------------------------------------------------
  */
-
+//! constraint: presumes dest >= 3 bytes, does not append null.
 static void
 U24TOA(unsigned u, unsigned char *dest)
 {
@@ -2478,7 +2478,7 @@ U24TOA(unsigned u, unsigned char *dest)
  *
  *----------------------------------------------------------------------
  */
-
+//! looks okay
 static void
 U16TOA(unsigned u, unsigned char *dest)
 {
